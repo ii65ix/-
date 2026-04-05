@@ -1,0 +1,660 @@
+{% extends "base.html" %}
+{% block title %}My Responsibilities — لعبة المسؤولية{% endblock %}
+
+{% block extra_head %}
+<style>
+.play-hub-shell{
+  width:100%;
+  min-height:calc(100vh - 100px);
+  position:relative;
+  z-index:1;
+  padding:var(--space-page);
+  background:transparent;
+  overflow:hidden;
+}
+.play-hub-shell--ingame{min-height:auto;}
+.app-hub{
+  position:relative;
+  z-index:1;
+  width:min(1000px,100%)!important;
+  max-width:100%!important;
+  margin:0 auto;
+  background:transparent!important;
+  border:none!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+.app-hub::before{display:none!important;}
+.menu-hub{padding:0;}
+/* لوحة داخلية بلون خشب/ورق كريمي فاتح كما في المرجع */
+.hub-panel{
+  --wood-frame:#3e2723;
+  --wood-inner-top:#faf7f0;
+  --wood-inner-mid:#f5f1e8;
+  --wood-inner-bot:#ebe4d8;
+  font-family:'Nunito',var(--font-ar);
+  position:relative;
+  overflow:visible;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(62,39,35,0.03) 2px,
+      rgba(62,39,35,0.03) 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(62,39,35,0.025) 2px,
+      rgba(62,39,35,0.025) 3px
+    ),
+    radial-gradient(ellipse 120% 80% at 50% 0%,rgba(255,255,255,0.55) 0%,transparent 55%),
+    linear-gradient(175deg,var(--wood-inner-top) 0%,var(--wood-inner-mid) 45%,var(--wood-inner-bot) 100%);
+  border:14px solid var(--wood-frame);
+  border-radius:28px;
+  padding:clamp(18px,3vw,32px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    inset 0 -18px 36px rgba(62,39,35,0.06),
+    0 20px 50px rgba(0,0,0,0.32);
+}
+.hub-panel__paper{
+  position:relative;
+  z-index:1;
+  border-radius:16px;
+  padding:clamp(10px,1.8vw,18px);
+  border:1px dashed #c4bfb4;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.04) 0px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(180deg,#fffcf5 0%,#f7f2e8 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.5);
+}
+.hub-vine{
+  position:absolute;
+  font-size:2rem;
+  line-height:1;
+  z-index:2;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+  pointer-events:none;
+}
+.hub-vine--tr{top:-8px;right:-4px;transform:rotate(15deg);}
+.hub-vine--bl{bottom:-6px;left:-2px;transform:rotate(-10deg);}
+.hub-star{
+  position:absolute;
+  color:#ffeb3b;
+  font-size:0.95rem;
+  filter:drop-shadow(0 0 6px rgba(255,235,80,0.9));
+  animation:hubStar 2.2s ease-in-out infinite;
+  pointer-events:none;
+}
+.hub-star--1{top:14%;left:10%;animation-delay:0s;}
+.hub-star--2{top:18%;right:12%;animation-delay:0.5s;}
+.hub-star--3{bottom:22%;left:14%;animation-delay:1s;}
+@keyframes hubStar{
+  0%,100%{opacity:0.65;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.12);}
+}
+.hub-title{
+  text-align:center;
+  margin:6px 0 clamp(18px,3vw,26px);
+  padding:0 12px;
+}
+.hub-title__row{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.hub-title__star{color:#ffeb3b;font-size:1.35rem;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.2));}
+.hub-title__main{
+  font-family:'Nunito',var(--font-ar);
+  font-weight:900;
+  font-size:clamp(1.2rem,3.2vw,1.75rem);
+  color:#424242;
+  margin:0;
+  letter-spacing:0.02em;
+  text-shadow:0 1px 0 rgba(255,255,255,0.6);
+}
+.hub-title__sub{
+  margin:8px 0 0;
+  font-size:0.9rem;
+  font-weight:600;
+  color:#757575;
+}
+.mode-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto auto;
+  gap:clamp(14px,2vw,20px);
+  align-items:stretch;
+}
+.mode-card{
+  position:relative;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+  text-align:left;
+  direction:ltr;
+  font-family:'Nunito',var(--font-ar);
+  color:#fff;
+  padding:0;
+  overflow:hidden;
+  box-shadow:0 8px 0 rgba(0,0,0,0.12),0 14px 28px rgba(0,0,0,0.22);
+  transition:transform 0.18s ease, filter 0.18s ease;
+}
+.mode-card:hover{
+  transform:translateY(-4px);
+  filter:brightness(1.03);
+  box-shadow:0 12px 0 rgba(0,0,0,0.1),0 20px 36px rgba(0,0,0,0.28);
+}
+.mode-card:active{transform:translateY(0);}
+.mode-card__inner{
+  position:relative;
+  z-index:1;
+  padding:16px 18px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:132px;
+}
+.mode-card--journey .mode-card__inner{min-height:310px;}
+.mode-card--journey .mode-card__compass-wrap{flex:1;align-items:center;}
+.mode-card--decision{
+  grid-column:1;
+  grid-row:1;
+  background:linear-gradient(155deg,#1e5fa8 0%,#0d3d7a 100%);
+  border:2px solid rgba(255,255,255,0.2);
+}
+.mode-card--tf{
+  grid-column:1;
+  grid-row:2;
+  background:linear-gradient(125deg,#5cb85c 0%,#2e7d32 48%,#c0392b 52%,#e74c3c 100%);
+  border:2px solid rgba(255,255,255,0.2);
+}
+.mode-card--journey{
+  grid-column:2;
+  grid-row:1 / span 2;
+  background:linear-gradient(175deg,#0d1538 0%,#1a237e 40%,#311b92 100%);
+  min-height:100%;
+  border:2px solid rgba(100,80,200,0.35);
+}
+.mode-card--journey::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(2px 2px at 15% 20%,rgba(255,255,255,0.85),transparent),
+    radial-gradient(1.5px 1.5px at 85% 35%,rgba(255,255,255,0.7),transparent),
+    radial-gradient(1.5px 1.5px at 45% 75%,rgba(255,255,255,0.55),transparent),
+    radial-gradient(2px 2px at 70% 60%,rgba(255,255,255,0.8),transparent);
+  background-size:110% 110%;
+  opacity:0.45;
+  pointer-events:none;
+}
+.mode-card__kicker{
+  font-size:0.68rem;
+  font-weight:900;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  opacity:0.95;
+}
+.mode-card__title{
+  font-size:clamp(1rem,2.3vw,1.22rem);
+  font-weight:900;
+  line-height:1.2;
+  text-shadow:0 2px 4px rgba(0,0,0,0.25);
+}
+.mode-card__ar{font-family:var(--font-ar);font-size:0.9rem;font-weight:800;opacity:0.95;}
+.mode-card__desc{
+  font-size:0.78rem;
+  font-weight:700;
+  opacity:0.95;
+  line-height:1.35;
+  margin-top:auto;
+}
+.mode-card__hero{font-size:3.1rem;line-height:1;text-align:center;margin:6px 0;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.25));}
+.mode-card__row-icons{display:flex;justify-content:center;gap:20px;font-size:2.8rem;margin:8px 0;}
+.mode-card__compass-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:120px;}
+.mode-card__compass{font-size:4.75rem;line-height:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.35));}
+.journey-foot{margin-top:auto;padding-top:12px;}
+.journey-progress{
+  height:14px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#5d4037,#4a3428);
+  border:2px solid #3e2723;
+  overflow:hidden;
+  margin-bottom:8px;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.35);
+}
+.journey-progress__bar{
+  height:100%;
+  width:12%;
+  border-radius:999px;
+  background:linear-gradient(180deg,#ffe082,#ff8f00);
+  box-shadow:0 0 12px rgba(255,193,7,0.6);
+}
+.journey-foot__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:0.78rem;
+  font-weight:800;
+  opacity:0.95;
+  text-shadow:0 1px 2px rgba(0,0,0,0.3);
+}
+.game-play{
+  position:relative;
+  overflow:hidden;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(62,39,35,0.028) 2px,rgba(62,39,35,0.028) 3px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(62,39,35,0.022) 2px,rgba(62,39,35,0.022) 3px),
+    radial-gradient(ellipse 100% 70% at 50% 0%,rgba(255,255,255,0.45) 0%,transparent 50%),
+    linear-gradient(175deg,#faf7f0 0%,#f5f1e8 45%,#ebe4d8 100%);
+  border:12px solid #3e2723;
+  border-radius:24px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.65),
+    inset 0 -12px 28px rgba(62,39,35,0.05),
+    0 16px 44px rgba(0,0,0,0.28);
+}
+.game-play::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:4px;
+  background:linear-gradient(90deg,#3e2723,var(--accent),#2e7d32);
+  opacity:0.9;
+  pointer-events:none;
+}
+.game-play #question{font-family:'Nunito',var(--font-ar);}
+
+/* —— دارك مود: تناسق مربع اختيار الألعاب مع الخلفية الداكنة —— */
+html[data-bg-theme="dark"] .hub-panel{
+  --wood-frame:#4a3f38;
+  --wood-inner-top:#2f3540;
+  --wood-inner-mid:#262b33;
+  --wood-inner-bot:#1e2229;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.02) 2px,rgba(255,255,255,0.02) 3px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(255,255,255,0.015) 2px,rgba(255,255,255,0.015) 3px),
+    radial-gradient(ellipse 120% 85% at 50% 0%,rgba(120,160,220,0.14) 0%,transparent 52%),
+    linear-gradient(175deg,var(--wood-inner-top) 0%,var(--wood-inner-mid) 48%,var(--wood-inner-bot) 100%);
+  border-color:#5c4d42;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    inset 0 -20px 40px rgba(0,0,0,0.35),
+    0 22px 56px rgba(0,0,0,0.55);
+}
+html[data-bg-theme="dark"] .hub-panel__paper{
+  border-color:rgba(150,160,180,0.28);
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0px,transparent 1px,transparent 3px),
+    linear-gradient(180deg,#2a3038 0%,#22272e 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+html[data-bg-theme="dark"] .hub-title__main{
+  color:#eceff4;
+  text-shadow:0 1px 3px rgba(0,0,0,0.45);
+}
+html[data-bg-theme="dark"] .hub-title__sub{
+  color:#9aa3b2;
+}
+html[data-bg-theme="dark"] .hub-title__star{
+  color:#ffd54f;
+  filter:drop-shadow(0 0 8px rgba(255,213,79,0.35));
+}
+html[data-bg-theme="dark"] .hub-star{
+  color:#ffd54f;
+  opacity:0.85;
+  filter:drop-shadow(0 0 6px rgba(255,213,79,0.25));
+}
+html[data-bg-theme="dark"] .mode-card{
+  box-shadow:0 8px 0 rgba(0,0,0,0.35),0 16px 32px rgba(0,0,0,0.45);
+}
+html[data-bg-theme="dark"] .mode-card:hover{
+  box-shadow:0 12px 0 rgba(0,0,0,0.28),0 22px 40px rgba(0,0,0,0.5);
+}
+html[data-bg-theme="dark"] .game-play{
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.02) 2px,rgba(255,255,255,0.02) 3px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(255,255,255,0.015) 2px,rgba(255,255,255,0.015) 3px),
+    radial-gradient(ellipse 100% 70% at 50% 0%,rgba(100,140,200,0.1) 0%,transparent 50%),
+    linear-gradient(175deg,#2c3238 0%,#252a31 45%,#1c2026 100%);
+  border-color:#4a3f38;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -12px 28px rgba(0,0,0,0.3),
+    0 18px 48px rgba(0,0,0,0.45);
+}
+html[data-bg-theme="dark"] .game-play::before{
+  opacity:0.85;
+}
+html[data-bg-theme="dark"] .game-play #question{
+  color:#eceff4;
+}
+html[data-bg-theme="dark"] .game-play .field-block label,
+html[data-bg-theme="dark"] .game-play .field-block > p:first-child{
+  color:#a8b0bc;
+}
+html[data-bg-theme="dark"] .game-play textarea{
+  background:#1a1f26;
+  border-color:rgba(255,255,255,0.14);
+  color:#eceff4;
+}
+html[data-bg-theme="dark"] .game-play .choice-btn{
+  background:#2a3139;
+  border-color:rgba(255,255,255,0.14);
+  color:#eceff4;
+}
+html[data-bg-theme="dark"] .game-play .choice-btn:hover{
+  background:#323a44;
+  border-color:rgba(66,133,244,0.5);
+}
+
+@media (max-width:720px){
+  .mode-grid{grid-template-columns:1fr;grid-template-rows:none;}
+  .mode-card--journey{grid-column:1;grid-row:auto;min-height:280px;}
+  .mode-card--decision,.mode-card--tf{grid-column:1;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="play-hub-shell">
+<div id="app" class="app-hub">
+
+  {% if messages %}
+  <div class="shell shell--auth" style="padding-bottom:8px;">
+    {% for message in messages %}
+      <div class="auth-banner" role="status">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div id="menu" class="menu-hub">
+    <div class="hub-panel">
+      <span class="hub-vine hub-vine--tr" aria-hidden="true">🌿</span>
+      <span class="hub-vine hub-vine--bl" aria-hidden="true">🌿</span>
+      <span class="hub-star hub-star--1" aria-hidden="true">✦</span>
+      <span class="hub-star hub-star--2" aria-hidden="true">✦</span>
+      <span class="hub-star hub-star--3" aria-hidden="true">✦</span>
+
+      <div class="hub-panel__paper">
+      <header class="hub-title">
+        <div class="hub-title__row">
+          <span class="hub-title__star" aria-hidden="true">★</span>
+          <h1 class="hub-title__main">اختر وضع اللعب</h1>
+          <span class="hub-title__star" aria-hidden="true">★</span>
+        </div>
+        <p class="hub-title__sub">لعبة بسيطة عن الخيارات والمسؤولية</p>
+      </header>
+
+      <div class="mode-grid">
+        <button type="button" class="mode-card mode-card--decision" onclick="start('situation')">
+          <div class="mode-card__inner">
+            <span class="mode-card__kicker">Decision Time!</span>
+            <span class="mode-card__title">ماذا أفعل؟</span>
+            <div class="mode-card__hero" aria-hidden="true">🤖</div>
+            <p class="mode-card__desc">Help our friends make smart choices!</p>
+          </div>
+        </button>
+
+        <button type="button" class="mode-card mode-card--tf" onclick="start('truefalse')">
+          <div class="mode-card__inner">
+            <span class="mode-card__kicker">True or False</span>
+            <span class="mode-card__title">صح أو خطأ</span>
+            <div class="mode-card__row-icons" aria-hidden="true"><span>👍</span><span>👎</span></div>
+            <p class="mode-card__desc">See how well you know responsibility!</p>
+          </div>
+        </button>
+
+        <button type="button" class="mode-card mode-card--journey" onclick="start('journey')">
+          <div class="mode-card__inner">
+            <span class="mode-card__kicker">Adventure</span>
+            <span class="mode-card__title">Responsibility Journey</span>
+            <span class="mode-card__ar" style="margin-top:-4px;">رحلة المسؤولية</span>
+            <div class="mode-card__compass-wrap" aria-hidden="true">
+              <span class="mode-card__compass">🧭</span>
+            </div>
+            <div class="journey-foot">
+              <div class="journey-progress" role="progressbar" aria-valuenow="12" aria-valuemin="0" aria-valuemax="100">
+                <div class="journey-progress__bar"></div>
+              </div>
+              <div class="journey-foot__row">
+                <span>Progress: 12%</span>
+                <span aria-hidden="true">🎁</span>
+              </div>
+            </div>
+          </div>
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="game" class="game-play shell hidden">
+
+    <div class="game-head">
+      <div id="navButtons" class="nav-top hidden">
+        <button type="button" class="black-btn" onclick="backQuestion()">↩ السؤال السابق / Back</button>
+        <button type="button" class="blue-btn" onclick="backHome()">⌂ البداية / Home</button>
+      </div>
+      <div class="score">النقاط / Score <span id="score">0</span></div>
+    </div>
+
+    <h2 id="question"></h2>
+
+    <div id="choices"></div>
+
+    <div id="textBox" class="field-block hidden">
+      <p>اكتب إجابتك / Write your answer</p>
+      <textarea id="textAnswer" rows="4" placeholder="اكتب هنا بحرية… / Write here…"></textarea>
+      <button type="button" class="main-btn" onclick="submitText()">إرسال / Submit</button>
+    </div>
+
+    <div id="reasonBox" class="field-block hidden">
+      <p>لماذا اخترت هذا الجواب؟ / Why did you choose this answer?</p>
+      <textarea id="reason" rows="3" placeholder="السبب بالعربي أو الإنجليزي…"></textarea>
+      <button type="button" class="main-btn" onclick="submitReason()">إرسال / Submit</button>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+
+  </div>
+
+</div>
+</div>
+
+<div id="finishModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="finishTitle">
+  <div class="modal__box">
+    <h3 id="finishTitle">انتهت الجولة!</h3>
+    <p>Round complete — أحسنتِ</p>
+    <p class="modal__score" id="finishScore">0</p>
+    <button type="button" class="main-btn" onclick="location.reload()">العب مرة أخرى / Play again</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ game_data|json_script:"game-questions-json" }}
+<script>
+const data = JSON.parse(document.getElementById('game-questions-json').textContent);
+
+let mode,index=0,score=0,currentAnswer="";
+
+function start(m){
+mode=m;
+index=0;
+score=0;
+document.querySelector(".play-hub-shell")?.classList.add("play-hub-shell--ingame");
+document.getElementById("menu").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+document.getElementById("score").innerText=score;
+next();
+}
+
+function next(){
+let fb=document.getElementById("feedback");
+fb.innerText="";
+fb.classList.remove("is-warn","is-neutral");
+document.getElementById("textAnswer").value="";
+document.getElementById("reason").value="";
+document.getElementById("navButtons").classList.add("hidden");
+
+let q=data[mode][index];
+document.getElementById("question").innerText=q.q;
+
+let choices=document.getElementById("choices");
+choices.innerHTML="";
+choices.classList.remove("hidden");
+
+document.getElementById("textBox").classList.add("hidden");
+document.getElementById("reasonBox").classList.add("hidden");
+
+if(q.a){
+q.a.forEach((ans,i)=>{
+let b=document.createElement("button");
+b.type="button";
+b.className="choice-btn";
+b.innerText=ans;
+b.onclick=()=>check(i);
+choices.appendChild(b);
+});
+}
+else if(q.answer){
+let row=document.createElement("div");
+row.className="choice-row";
+let b1=document.createElement("button");
+b1.type="button";
+b1.className="choice-btn";
+b1.innerText="صح / True";
+b1.onclick=()=>checkTF("True");
+let b2=document.createElement("button");
+b2.type="button";
+b2.className="choice-btn";
+b2.innerText="خطأ / False";
+b2.onclick=()=>checkTF("False");
+row.appendChild(b1);
+row.appendChild(b2);
+choices.appendChild(row);
+}
+else if(q.text){
+document.getElementById("textBox").classList.remove("hidden");
+}
+}
+
+function check(i){
+let q=data[mode][index];
+if(Array.isArray(q.c)){
+if(q.c.includes(i)){score+=2; show("Correct ✔");}
+else{show("Wrong ✖");}
+}else{
+if(i==q.c){score+=2; show("Correct ✔");}
+else{show("Wrong ✖");}
+}
+}
+
+function checkTF(ans){
+currentAnswer=ans;
+document.getElementById("choices").classList.add("hidden");
+document.getElementById("reasonBox").classList.remove("hidden");
+}
+
+function submitReason(){
+let r=document.getElementById("reason").value.trim();
+if(r==""){
+let fb=document.getElementById("feedback");
+fb.innerText="اكتب السبب / Please write your reason";
+fb.classList.add("is-warn");
+fb.classList.remove("is-neutral");
+return;
+}
+let q=data[mode][index];
+if(currentAnswer==q.answer){score+=2; show("Correct ✔");}
+else{show("Wrong ✖");}
+}
+
+function countWords(s){
+return s.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function groupMatches(t, keywords){
+let lower=t.toLowerCase();
+return keywords.some(kw=>lower.includes(kw.toLowerCase()));
+}
+
+function scoreTextAnswer(q, raw){
+let t=raw.trim();
+let badWords=["لا اعرف","لم أفهم","لم افهم","i don't know","i dont know","i don't understand","i dont understand"];
+if(t.length<3 || badWords.some(w=>t.toLowerCase().includes(w))){
+return {points:0,msg:"ضعيف ✖ / Not Good ✖"};
+}
+let rub=q.rubric;
+if(!rub){
+if(countWords(t)<2){return {points:0,msg:"ضعيف ✖"};}
+return {points:2,msg:"جيد 👍 / Good 👍"};
+}
+let wc=countWords(t);
+if(wc<rub.minWords){
+return {points:0,msg:"أكثر من "+rub.minWords+" كلمات / Need "+rub.minWords+"+ words"};
+}
+let groups=rub.groups||[];
+let matched=groups.filter(g=>groupMatches(t,g)).length;
+let needFull=rub.minGroupsFull!=null?rub.minGroupsFull:2;
+let needPart=rub.minGroupsPartial!=null?rub.minGroupsPartial:1;
+if(matched>=needFull){
+return {points:2,msg:"ممتاز ✔ (٢) / Excellent ✔ (2)"};
+}
+if(matched>=needPart){
+return {points:1,msg:"مقبول ✓ (١) / OK ✓ (1)"};
+}
+return {points:0,msg:"أضف أفكارًا أوضح (كلمات مفتاحية) / Need clearer ideas"};
+}
+
+function submitText(){
+let raw=document.getElementById("textAnswer").value;
+let q=data[mode][index];
+let r=scoreTextAnswer(q, raw);
+score+=r.points;
+show(r.msg);
+}
+
+function show(msg){
+document.getElementById("score").innerText=score;
+let el=document.getElementById("feedback");
+el.innerText=msg;
+el.classList.remove("is-warn","is-neutral");
+if(/✖|Wrong|ضعيف|Not Good/i.test(msg)){el.classList.add("is-warn");}
+else if(/Need|أكثر|أضف|مقبول/i.test(msg)){el.classList.add("is-neutral");}
+document.getElementById("navButtons").classList.remove("hidden");
+
+setTimeout(()=>{
+index++;
+if(index>=data[mode].length){
+document.getElementById("finishScore").textContent=String(score);
+document.getElementById("finishModal").classList.remove("hidden");
+}else{next();}
+},1500);
+}
+
+function backQuestion(){
+if(index>0){
+index--;
+next();
+}
+}
+
+function backHome(){
+location.reload();
+}
+
+</script>
+{% endblock %}

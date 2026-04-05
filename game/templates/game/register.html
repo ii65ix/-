@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}إنشاء حساب — My Responsibilities{% endblock %}
+{% block content %}
+<div id="app">
+  <div class="shell auth-page">
+    <header class="brand">
+      <h1 class="brand__title">إنشاء حساب</h1>
+      <p class="brand__tag">Create an account — ثم العب مباشرة</p>
+    </header>
+
+    <form method="post" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<span class="helptext">{{ field.help_text|safe }}</span>{% endif %}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="main-btn main-btn--accent">تسجيل / Create account</button>
+    </form>
+
+    <p class="auth-links">لديك حساب؟ <a href="{% url 'login' %}">تسجيل الدخول / Sign in</a></p>
+  </div>
+</div>
+{% endblock %}

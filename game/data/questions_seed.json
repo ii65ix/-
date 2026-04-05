@@ -1,0 +1,143 @@
+{
+  "situation": [
+    {
+      "q": "Students mock a classmate.\nيسخر الطلاب من زميل.\nWhat do you do?",
+      "a": ["I stop them / أوقفهم", "I ignore / أتجاهل"],
+      "c": 0
+    },
+    {
+      "q": "You need shoes but want a game.\nتحتاج حذاء لكن تريد لعبة.\nWhat do you do?",
+      "a": ["Buy shoes / أشتري الحذاء", "Buy game / أشتري اللعبة"],
+      "c": 0
+    },
+    {
+      "q": "You discovered your best friend is sharing your private info and talking behind your back, but she is going through a hard time.\nاكتشفتِ أن صديقتك تسرب معلوماتك لكنها تمر بظروف صعبة.\n👉 ماذا تفعلين؟",
+      "text": true,
+      "rubric": {
+        "minWords": 8,
+        "groups": [
+          ["حديث", "كلام", "أتكلم", "talk", "speak", "discuss"],
+          ["حدود", "خصوصية", "privacy", "boundary"],
+          ["تعاطف", "فهم", "empathy", "understand", "listen"]
+        ],
+        "minGroupsFull": 2,
+        "minGroupsPartial": 1
+      }
+    },
+    {
+      "q": "You got a very profitable job offer, but it is illegal.\nعرض عليكِ عمل مربح لكنه غير قانوني.\n👉 ماذا تفعلين؟",
+      "text": true,
+      "rubric": {
+        "minWords": 8,
+        "groups": [
+          ["رفض", "أرفض", "refuse", "decline", "reject"],
+          ["قانون", "legal", "law", "شرعي"],
+          ["أخلاق", "ethics", "مبدأ", "principle"]
+        ],
+        "minGroupsFull": 2,
+        "minGroupsPartial": 1
+      }
+    },
+    {
+      "q": "You witnessed a close person committing a huge mistake that could destroy someone’s life. Speaking up might cost you this person forever.\nأنتِ شاهدتِ شخصًا قريبًا منكِ يرتكب خطأ كبير قد يدمّر حياة شخص آخر، وإذا تكلمتِ ستخسرين هذا الشخص للأبد\n👉 ماذا تفعلين؟",
+      "text": true,
+      "rubric": {
+        "minWords": 10,
+        "groups": [
+          ["حقيقة", "truth", "صادق", "honest"],
+          ["ضرر", "harm", "خطر", "danger", "أبلغ", "report"],
+          ["حكيم", "wisely", "تفكير", "careful", "balance"]
+        ],
+        "minGroupsFull": 2,
+        "minGroupsPartial": 1
+      }
+    },
+    {
+      "q": "You have a chance to travel and fulfill your dream, but it means leaving your mother/family when they really need you.\nلديكِ فرصة تسافرين وتحققين حلمك، لكن هذا يعني ترك والدتك/عائلتك في وقت هم بحاجة لكِ فيه جدًا\n👉 ماذا تفعلين؟",
+      "text": true,
+      "rubric": {
+        "minWords": 10,
+        "groups": [
+          ["عائلة", "family", "أم", "mother", "والد"],
+          ["أولوية", "priority", "احتياج", "need"],
+          ["توازن", "balance", "حل", "solution", "تأجيل", "delay"]
+        ],
+        "minGroupsFull": 2,
+        "minGroupsPartial": 1
+      }
+    },
+    {
+      "q": "Someone innocent was accused of something serious and you are the only one who knows the truth, but speaking could cause you great trouble.\nتم اتهام شخص بريء بشيء خطير، وأنتِ الوحيدة التي تعرفين الحقيقة، لكن قولها قد يسبب لكِ مشاكل أو أذى كبير\n👉 ماذا تفعلين؟",
+      "text": true,
+      "rubric": {
+        "minWords": 10,
+        "groups": [
+          ["حقيقة", "truth", "شهادة", "witness"],
+          ["عدل", "justice", "بريء", "innocent"],
+          ["مسؤولية", "responsibility", "أمان", "safety", "خطر", "risk"]
+        ],
+        "minGroupsFull": 2,
+        "minGroupsPartial": 1
+      }
+    }
+  ],
+  "truefalse": [
+    {"q": "A child broke a cup and admitted responsibility.\nطفل كسر كوب واعترف.", "answer": "True"},
+    {"q": "A teen blamed teacher for not studying.\nمراهق ما ذاكر وقال المعلم السبب.", "answer": "False"},
+    {"q": "A girl apologized for missing homework.\nبنت نسيت واجبها واعتذرت ووعدت ما تكرر.", "answer": "True"},
+    {"q": "A man blamed traffic but was late.\nشاب تأخر عن العمل وقال: الزحمة السبب رغم إنه طلع متأخر.", "answer": "False"},
+    {"q": "A child cleaned room alone.\nطفل وسّخ غرفته ونظفها بنفسه بدون ما أحد يطلب منه.", "answer": "True"},
+    {"q": "A teen apologized to friend.\nمراهقة أخطأت بحق صديقتها واعتذرت منها مباشرة.", "answer": "True"},
+    {"q": "A man broke item and left.\nشاب كسر شيء في مكان عام ومشى بدون ما يبلغ أحد.", "answer": "False"},
+    {"q": "A child accused others.\nطفل ضيّع أغراضه وقال: أكيد أحد سرقها بدون تأكد.", "answer": "False"},
+    {"q": "A girl asked for help.\nبنت ما فهمت الدرس وطلبت المساعدة بدل ما تهمله.", "answer": "True"},
+    {"q": "A teen broke promise.\nمراهق وعد بشيء وما نفّذه وما اعتذر.", "answer": "False"},
+    {"q": "A child denied spilling juice.\nطفل سكب العصير وقال: أنا ما سويت شيء.", "answer": "False"},
+    {"q": "A man apologized and rescheduled.\nشاب نسي موعد مهم واتصل واعتذر وحدد موعد جديد.", "answer": "True"},
+    {"q": "A girl helped family.\nبنت ساعدت أهلها في البيت بدون تذمر.", "answer": "True"},
+    {"q": "A teen left team.\nمراهق أخطأ في مشروع جماعي وترك الفريق يتحمل النتيجة.", "answer": "False"},
+    {"q": "A child fixed mistake.\nطفل حاول يصلح خطأه بعد ما خرب لعبة.", "answer": "True"},
+    {"q": "A man managed money.\nشاب واجه مشكلة مالية وبدأ ينظم مصروفه بدل ما يشتكي فقط.", "answer": "True"},
+    {"q": "A girl copied homework.\nبنت نقلت الواجب من صديقتها بدل ما تحله بنفسها.", "answer": "False"},
+    {"q": "A teen admitted mistake.\nمراهق اعترف بخطأه حتى لو كان بيزعل أهله.", "answer": "True"},
+    {"q": "A child ignored safety.\nطفل تجاهل تعليمات السلامة وتسبب بمشكلة.", "answer": "False"},
+    {"q": "A man accepted consequences.\nشاب تحمّل نتيجة قراره حتى لو كانت صعبة.", "answer": "True"}
+  ],
+  "journey": [
+    {
+      "q": "Your mom asked you to tidy your toys.\nأمك قالت لك رتب ألعابك.",
+      "a": ["I tidy them / أرتبها", "I ignore / أتجاهل", "I delay / أأجل"],
+      "c": [0, 2]
+    },
+    {
+      "q": "You have homework but want to play.\nعندك واجب وتبي تلعب.",
+      "a": ["Finish homework first / أخلص الواجب أولاً", "Play and postpone / ألعب وأأجل", "Ignore / أتجاهل"],
+      "c": [0, 1]
+    },
+    {
+      "q": "Friends do something wrong.\nأصحابك يسوون شيء غلط.",
+      "a": ["I refuse and stay away / أرفض وأبتعد", "I join / أشارك", "I stay silent / أصمت"],
+      "c": [0, 2]
+    },
+    {
+      "q": "Important test.\nعندك اختبار مهم.",
+      "a": ["Study hard / أذاكر بجد", "Rely on luck / أعتمد على الحظ", "Ignore / أتجاهل"],
+      "c": [0, 1]
+    },
+    {
+      "q": "You have money allowance.\nعندك مصروف.",
+      "a": ["Save some / أوفر جزء", "Spend all / أصرف كله", "Share / أشارك"],
+      "c": [0, 2]
+    },
+    {
+      "q": "Got a job.\nحصلت وظيفة.",
+      "a": ["Commit and develop / ألتزم وأتطور", "Neglect / أهمل", "Do minimum / أبذل الحد الأدنى"],
+      "c": [0, 1]
+    },
+    {
+      "q": "Responsibilities at home/work/money.\nعندك مسؤوليات (بيت – شغل – فلوس).",
+      "a": ["Organize time / أنظم وقتي", "Live randomly / أعيش بعشوائية", "Ignore / أتجاهل"],
+      "c": [0, 2]
+    }
+  ]
+}

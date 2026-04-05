@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}تسجيل الدخول — My Responsibilities{% endblock %}
+{% block content %}
+<div id="app">
+  <div class="shell auth-page">
+    <header class="brand">
+      <h1 class="brand__title">تسجيل الدخول</h1>
+      <p class="brand__tag">Sign in to play — My Responsibilities</p>
+    </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="auth-banner" role="status">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% if form.non_field_errors %}
+        <div class="auth-errors">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% for field in form %}
+        <div class="form-row">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="main-btn">دخول / Sign in</button>
+    </form>
+
+    <p class="auth-links">لا تملك حساباً؟ <a href="{% url 'register' %}">إنشاء حساب / Register</a></p>
+  </div>
+</div>
+{% endblock %}
