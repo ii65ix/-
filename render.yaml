@@ -1,0 +1,17 @@
+# انسخي أوامر buildCommand و startCommand من هنا إلى لوحة Render إذا لم تستخدمي Blueprint
+services:
+  - type: web
+    name: my-responsibilities
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate --no-input
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        sync: false
