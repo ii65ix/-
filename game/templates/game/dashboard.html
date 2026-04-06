@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}لوحة النتائج — My Responsibilities{% endblock %}
+
+{% block extra_head %}
+<style>
+.dash-wrap{max-width:1000px;margin:0 auto;width:100%;}
+.dash-hero{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:clamp(18px,3vw,26px);
+  margin-bottom:var(--space-page);
+  border:1px solid rgba(26,26,26,0.08);
+  box-shadow:var(--shadow);
+}
+.dash-hero h1{margin:0 0 8px;font-size:clamp(1.25rem,3vw,1.6rem);}
+.dash-hero p{margin:0;color:var(--muted);font-size:0.95rem;}
+.dash-stats{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;}
+.dash-stat{
+  flex:1;min-width:140px;
+  padding:14px 16px;border-radius:var(--radius-md);
+  background:var(--accent-soft);color:var(--accent);
+  font-weight:700;font-size:0.95rem;
+}
+.dash-panel{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:clamp(16px,3vw,22px);
+  margin-bottom:var(--space-page);
+  border:1px solid rgba(26,26,26,0.08);
+  box-shadow:var(--shadow);
+}
+.dash-panel h2{margin:0 0 14px;font-size:1.1rem;}
+.dash-table-wrap{overflow-x:auto;border-radius:var(--radius-md);border:1px solid rgba(26,26,26,0.08);}
+.dash-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+.dash-table th,.dash-table td{padding:10px 12px;text-align:right;border-bottom:1px solid rgba(26,26,26,0.06);}
+.dash-table th{background:rgba(42,82,190,0.08);font-weight:700;color:var(--ink);}
+.dash-table tr:hover td{background:rgba(42,82,190,0.04);}
+.dash-badge{font-size:0.72rem;padding:2px 8px;border-radius:999px;background:var(--success-soft);color:var(--success);font-weight:700;}
+.mode-situation{background:rgba(30,90,168,0.12);color:#1565c0;}
+.mode-tf{background:rgba(30,122,74,0.12);color:var(--success);}
+.mode-journey{background:rgba(49,27,146,0.12);color:#4527a0;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shell dash-wrap">
+  <div class="dash-hero">
+    <h1>📊 لوحة النتائج</h1>
+    <p>عرض نتائج جميع اللاعبين بعد إكمال الجولات وحفظها تلقائياً.</p>
+    <div class="dash-stats">
+      <div class="dash-stat">إجمالي الجولات المحفوظة: {{ total_games }}</div>
+      <div class="dash-stat">عدد اللاعبين الذين لعبوا: {{ total_users_played }}</div>
+    </div>
+  </div>
+
+  <div class="dash-panel">
+    <h2>🏆 أفضل النقاط (لكل مستخدم)</h2>
+    <div class="dash-table-wrap">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>المستخدم</th>
+            <th>أعلى نقاط</th>
+            <th>عدد الجولات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in leaderboard %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><strong>{{ row.user__username }}</strong></td>
+            <td>{{ row.best_score }}</td>
+            <td>{{ row.total_plays }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">لا توجد نتائج بعد — العب جولة كاملة لتُسجَّل هنا.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="dash-panel">
+    <h2>📜 آخر النتائج</h2>
+    <div class="dash-table-wrap">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>التاريخ</th>
+            <th>المستخدم</th>
+            <th>الوضع</th>
+            <th>النقاط</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recent %}
+          <tr>
+            <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ r.user.username }}</td>
+            <td>
+              {% if r.mode == "situation" %}<span class="dash-badge mode-situation">ماذا أفعل؟</span>
+              {% elif r.mode == "truefalse" %}<span class="dash-badge mode-tf">صح أو خطأ</span>
+              {% else %}<span class="dash-badge mode-journey">رحلة</span>{% endif %}
+            </td>
+            <td><strong>{{ r.score }}</strong></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">لا توجد سجلات بعد.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

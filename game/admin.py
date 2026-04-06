@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Question
+from .models import GameResult, Profile, Question
 
 
 @admin.register(Question)
@@ -24,6 +24,21 @@ class QuestionAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """لا حذف من لوحة الإدارة — التعديل والإضافة فقط."""
         return False
+
+
+@admin.register(GameResult)
+class GameResultAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "mode", "score", "created_at")
+    list_filter = ("mode", "created_at")
+    search_fields = ("user__username",)
+    ordering = ("-created_at",)
+    date_hierarchy = "created_at"
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "updated_at")
+    search_fields = ("user__username", "bio")
 
 
 admin.site.site_header = "My Responsibilities — إدارة الأسئلة"

@@ -640,9 +640,21 @@ setTimeout(()=>{
 index++;
 if(index>=data[mode].length){
 document.getElementById("finishScore").textContent=String(score);
+saveRoundResult(mode,score);
 document.getElementById("finishModal").classList.remove("hidden");
 }else{next();}
 },1500);
+}
+
+function saveRoundResult(m,finalScore){
+var el=document.querySelector("#csrf-helper input[name=csrfmiddlewaretoken]");
+if(!el)return;
+fetch("{% url 'save_game_result' %}",{
+method:"POST",
+credentials:"same-origin",
+headers:{"Content-Type":"application/json","X-CSRFToken":el.value},
+body:JSON.stringify({mode:m,score:finalScore})
+}).catch(function(){});
 }
 
 function backQuestion(){

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -77,3 +78,52 @@ class Question(models.Model):
                     raise ValidationError({"choices_json": "أضف خيارين على الأقل."})
                 if not self.correct_indices:
                     raise ValidationError({"correct_indices": "حدد الفهرس الصحيح (مثل [0])."})
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="game_profile",
+        verbose_name="المستخدم",
+    )
+    bio = models.TextField("نبذة عنك", blank=True, max_length=500)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "بروفايل"
+        verbose_name_plural = "البروفايلات"
+
+    def __str__(self):
+        return f"Profile({self.user.username})"
+
+
+class GameResult(models.Model):
+    """نتيجة جولة لعب كاملة (وضع واحد)."""
+
+    MODE_SITUATION = "situation"
+    MODE_TRUEFALSE = "truefalse"
+    MODE_JOURNEY = "journey"
+    MODE_CHOICES = [
+        (MODE_SITUATION, "ماذا أفعل؟"),
+        (MODE_TRUEFALSE, "صح أو خطأ"),
+        (MODE_JOURNEY, "رحلة المسؤولية"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="game_results",
+        verbose_name="المستخدم",
+    )
+    mode = models.CharField("وضع اللعب", max_length=20, choices=MODE_CHOICES, db_index=True)
+    score = models.PositiveIntegerField("النقاط")
+    created_at = models.DateTimeField("التاريخ", auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "نتيجة لعب"
+        verbose_name_plural = "نتائج اللعب"
+
+    def __str__(self):
+        return f"{self.user.username} {self.mode} {self.score}"

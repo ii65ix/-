@@ -19,5 +19,8 @@ urlpatterns = [
         name="logout",
     ),
     path("accounts/register/", views.register, name="register"),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("profile/", views.profile_view, name="profile"),
+    path("api/save-result/", views.save_game_result, name="save_game_result"),
     path("", views.index, name="home"),
 ]

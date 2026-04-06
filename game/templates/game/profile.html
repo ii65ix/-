@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}البروفايل — {{ user.username }}{% endblock %}
+
+{% block extra_head %}
+<style>
+.pro-wrap{max-width:560px;margin:0 auto;width:100%;}
+.pro-card{
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:clamp(20px,4vw,28px);
+  margin-bottom:var(--space-page);
+  border:1px solid rgba(26,26,26,0.08);
+  box-shadow:var(--shadow);
+}
+.pro-card h1{margin:0 0 6px;font-size:1.35rem;}
+.pro-meta{color:var(--muted);font-size:0.9rem;margin-bottom:18px;}
+.pro-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(145deg,#ffd54f,#ff8f00);
+  border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.75rem;font-weight:800;color:#5c3d2e;
+  margin-bottom:16px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.12);
+}
+.pro-card h2{font-size:1.05rem;margin:0 0 12px;}
+.stat-mini{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
+.stat-mini span{
+  font-size:0.82rem;padding:6px 10px;border-radius:var(--radius-sm);
+  background:var(--accent-soft);color:var(--accent);font-weight:600;
+}
+.dash-table-wrap{overflow-x:auto;border-radius:var(--radius-md);border:1px solid rgba(26,26,26,0.08);}
+.dash-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.dash-table th,.dash-table td{padding:8px 10px;text-align:right;border-bottom:1px solid rgba(26,26,26,0.06);}
+.dash-table th{background:rgba(42,82,190,0.06);font-weight:700;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shell pro-wrap">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="auth-banner" role="status" style="margin-bottom:16px;">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="pro-card">
+    <div class="pro-avatar" aria-hidden="true">{{ user.username|slice:":1"|upper }}</div>
+    <h1>{{ user.username }}</h1>
+    <p class="pro-meta">{% if user.email %}{{ user.email }}{% else %}لا يوجد بريد مسجّل{% endif %}</p>
+
+    <h2>نبذة عنك</h2>
+    <form method="post" class="auth-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-row">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="main-btn main-btn--accent" style="margin-top:8px;">حفظ البروفايل</button>
+    </form>
+  </div>
+
+  {% if mode_stats %}
+  <div class="pro-card">
+    <h2>إحصائيات حسب الوضع</h2>
+    <div class="stat-mini">
+      {% for s in mode_stats %}
+      <span>
+        {% if s.mode == "situation" %}ماذا أفعل؟
+        {% elif s.mode == "truefalse" %}صح أو خطأ
+        {% else %}رحلة المسؤولية{% endif %}
+        — أفضل: {{ s.best }} — جولات: {{ s.plays }}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="pro-card">
+    <h2>آخر جولاتك</h2>
+    <div class="dash-table-wrap">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>التاريخ</th>
+            <th>الوضع</th>
+            <th>النقاط</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              {% if r.mode == "situation" %}ماذا أفعل؟
+              {% elif r.mode == "truefalse" %}صح أو خطأ
+              {% else %}رحلة المسؤولية{% endif %}
+            </td>
+            <td><strong>{{ r.score }}</strong></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" style="text-align:center;color:var(--muted);">لا توجد جولات محفوظة بعد — أكمل لعبة كاملة من الصفحة الرئيسية.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
