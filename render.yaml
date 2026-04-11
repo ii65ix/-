@@ -1,11 +1,12 @@
-# انسخي أوامر buildCommand و startCommand من هنا إلى لوحة Render إذا لم تستخدمي Blueprint
+# Environment (Secret): DJANGO_SUPERUSER_USERNAME ، DJANGO_SUPERUSER_PASSWORD
+# تأكدي أن المتغيرات مفعّلة لـ "Build & Runtime" أو على الأقل Runtime
 services:
   - type: web
     name: my-responsibilities
     runtime: python
     plan: free
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate --no-input
-    startCommand: gunicorn config.wsgi:application
+    buildCommand: pip install -r requirements.txt && bash build.sh
+    startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.3"
